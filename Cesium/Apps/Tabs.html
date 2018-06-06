@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Bootstrap Example</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="../Build/Cesium/Cesium.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script src="./Fing_files/popper.min.js.descarga"></script>
+  <link rel="stylesheet" href="https://openlayers.org/en/v4.6.5/css/ol.css" type="text/css">
+  <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=requestAnimationFrame,Element.prototype.classList,URL"></script>
+  <script src="https://openlayers.org/en/v4.6.5/build/ol.js"></script>
+  <script src="../Build/Cesium/Cesium.js"></script>
+  <style>
+    @import url(../Build/Cesium/Widgets/widgets.css);
+    html,
+    body,
+    #cesiumContainer {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <ul class="nav nav-tabs">
+      <li class="active">
+        <a data-toggle="tab" href="#home">OSM</a>
+      </li>
+      <li>
+        <a data-toggle="tab" href="#menu1" id ="cesuim_tab">Cesium</a>
+      </li>
+    </ul>
+
+    <div class="tab-content">
+      <div id="home" class="tab-pane fade in active" style="height: 570px">
+        <div class="row">
+          <div class="col col-lg-9">
+            <div id="map" class="map"></div>
+          </div>
+          <div class="col col-lg-3">
+            <h3>Hace click sobre el mapa y selecciona la altura</h3>
+            <div class="form-group">
+              <label for="x-input">X</label>
+              <input type="text" class="form-control-plaintext" id="x-input" placeholder="Esperando indicador" readonly>
+            </div>
+            <div class="form-group">
+              <label for="y-input">Y</label>
+              <input type="text" class="form-control-plaintext" id="y-input" placeholder="Esperando indicador" readonly>
+            </div>
+
+            <div class="form-group">
+              <label for="y-input">Altura</label>
+              <input type="number" class="form-control" id="y-input" placeholder="Altura">
+            </div>
+            <button id="volar_button" type="submit" class="btn btn-primary">Ver en 3D</button>
+          </div>
+        </div>
+
+
+      </div>
+      <div id="menu1" class="tab-pane fade" style="height: 570px">
+        <div id="cesiumContainer"></div>
+      </div>
+    </div>
+  </div>
+
+
+
+
+  <script>
+    var viewer = new Cesium.Viewer('cesiumContainer', {
+
+      animation: false,
+      fullscreenButton: false,
+      vrButton: false,
+      geocoder: false,
+      homeButton: false,
+      timeline: false,
+      navigationHelpButton: false
+
+    });
+
+    var initialPosition = Cesium.Cartesian3.fromDegrees(-74.01881302800248, 40.69114333714821, 753);
+    var initialOrientation = new Cesium.HeadingPitchRoll.fromDegrees(21.27879878293835, -21.34390550872461, 0.0716951918898415);
+    viewer.scene.camera.setView({
+      destination: initialPosition,
+      orientation: initialOrientation,
+      endTransform: Cesium.Matrix4.IDENTITY
+    });
+
+    // Load the NYC buildings tileset.
+    var tileset = new Cesium.Cesium3DTileset({ url: Cesium.IonResource.fromAssetId(4693) });
+    viewer.scene.primitives.add(tileset);
+  </script>
+
+  <script>
+    var map = new ol.Map({
+      layers: [
+        new ol.layer.Tile({
+          source: new ol.source.OSM()
+        })
+      ],
+      target: 'map',
+      view: new ol.View({
+        projection: 'EPSG:4326',
+        center: [-73.9989922, 40.711469],
+        zoom: 15
+      })
+    });
+
+    map.on('click', function (evt) {
+      var lonlat = ol.proj.transform(evt.coordinate, 'EPSG:3857', 'EPSG:4326');
+      var lon = lonlat[0];
+      var lat = lonlat[1];
+      $("#x-input").val(evt.coordinate[0]);
+      $("#y-input").val(evt.coordinate[1]);
+      
+    });
+
+    $("#volar_button").click(function() {
+      var x = $("#x-input").val();
+      var y = $("#y-input").val();
+      //volar(x,y)
+      $('#cesuim_tab').trigger('click')
+    });
+
+  </script>
+</body>
+
+</html>

@@ -4,7 +4,7 @@
 
 1. Install [Node.js](https://nodejs.org/en/).
 1. Clone this repo `git clone https://github.com/juanserralta1/TSIG-2018.git`.
-1. In your console, navigate to the root TSIG-2018 directory.
+1. In your console, navigate to the TSIG-2018/Cesium directory.
 1. Run `npm install`.
 1. Run `npm start`.
 

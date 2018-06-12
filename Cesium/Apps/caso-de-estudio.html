@@ -2,15 +2,18 @@
 <html lang="en">
 
 <head>
-  <title>Bootstrap Example</title>
+  <title>Caso de estudio</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
   <script src="../Build/Cesium/Cesium.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
   <script src="./Fing_files/popper.min.js.descarga"></script>
   <link rel="stylesheet" href="https://openlayers.org/en/v4.6.5/css/ol.css" type="text/css">
+
+
   <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=requestAnimationFrame,Element.prototype.classList,URL"></script>
   <script src="https://openlayers.org/en/v4.6.5/build/ol.js"></script>
   <script src="../Build/Cesium/Cesium.js"></script>
@@ -25,6 +28,82 @@
       padding: 0;
       overflow: hidden;
     }
+
+    .ol-popup {
+      position: absolute;
+      background-color: white;
+      -webkit-filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.2));
+      filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.2));
+      padding: 15px;
+      border-radius: 10px;
+      border: 1px solid #cccccc;
+      bottom: 12px;
+      left: -50px;
+    }
+
+    .ol-popup:after,
+    .ol-popup:before {
+      top: 100%;
+      border: solid transparent;
+      content: " ";
+      height: 0;
+      width: 0;
+      position: absolute;
+      pointer-events: none;
+    }
+
+    .ol-popup:after {
+      border-top-color: white;
+      border-width: 10px;
+      left: 48px;
+      margin-left: -10px;
+    }
+
+    .ol-popup:before {
+      border-top-color: #cccccc;
+      border-width: 11px;
+      left: 48px;
+      margin-left: -11px;
+    }
+
+    .ol-popup-content {
+      position: relative;
+      min-width: 200px;
+      min-height: 150px;
+      height: 100%;
+      max-height: 250px;
+      padding: 2px;
+      white-space: normal;
+      background-color: #f7f7f9;
+      border: 1px solid #e1e1e8;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    .ol-popup-content p {
+      font-size: 14px;
+      padding: 2px 4px;
+      color: #222;
+      margin-bottom: 15px;
+    }
+
+    .ol-popup-closer {
+      position: absolute;
+      top: -4px;
+      right: 2px;
+      font-size: 100%;
+      color: #0088cc;
+      text-decoration: none;
+    }
+
+    a.ol-popup-closer:hover {
+      color: #005580;
+      text-decoration: underline;
+    }
+
+    .ol-popup-closer:after {
+      content: "✖";
+    }
   </style>
 </head>
 
@@ -36,7 +115,7 @@
         <a data-toggle="tab" href="#home">OSM</a>
       </li>
       <li>
-        <a data-toggle="tab" href="#menu1" id ="cesuim_tab">Cesium</a>
+        <a data-toggle="tab" href="#menu1" id="cesuim_tab">Cesium</a>
       </li>
     </ul>
 
@@ -74,11 +153,11 @@
   </div>
 
 
-
+  <script src="ol-popup.js"></script>
 
   <script>
-    var viewer = new Cesium.Viewer('cesiumContainer', {
 
+    var viewer = new Cesium.Viewer('cesiumContainer', {
       animation: false,
       fullscreenButton: false,
       vrButton: false,
@@ -103,14 +182,72 @@
     // Load the NYC buildings tileset.
     var tileset = new Cesium.Cesium3DTileset({ url: Cesium.IonResource.fromAssetId(4693) });
     viewer.scene.primitives.add(tileset);
-  </script>
 
-  <script>
+    // OpenLayers Inizialization
+    var marker1 = new ol.Feature({
+      type: 'icon',
+      name: "Torre 1",
+      apartments :[
+        ["Piso 10", 100],
+        ["Piso 13", 130],
+        ["Piso 20", 200]
+      ],
+      geometry: new ol.geom.Point([-74.00086964665701, 40.705590795380765])
+    });
+    var marker2 = new ol.Feature({
+      type: 'icon',
+      name: "Torre 2",
+      apartments :[
+        ["Piso 15", 150],
+        ["Piso 25", 250],
+        ["Piso 30", 350]
+      ],
+      geometry: new ol.geom.Point([-74.00608219206333, 40.71452870965004])
+    });
+
+
+    var marker3 = new ol.Feature({
+      type: 'icon',
+      name: "Torre 3",
+      apartments :[
+        ["Piso 15", 150],
+        ["Piso 25", 250],
+        ["Piso 30", 350]
+      ],
+      geometry: new ol.geom.Point([-74.01200719285684,40.707841894347595])
+    });
+
+    var styles = {
+      'icon': new ol.style.Style({
+        image: new ol.style.Icon({
+          scale: 0.7,
+          rotateWithView: false,
+          anchor: [0.5, 1],
+          anchorXUnits: 'fraction',
+          anchorYUnits: 'fraction',
+          opacity: 1,
+          src: '//raw.githubusercontent.com/jonataswalker/map-utils/master/images/marker.png'
+        }),
+        zIndex: 5
+      }),
+
+    };
+
+    var vectorLayer = new ol.layer.Vector({
+      source: new ol.source.Vector({
+        features: [marker1, marker2,marker3]
+      }),
+      style: function (feature) {
+        return styles[feature.get('type')];
+      }
+    });
+
     var map = new ol.Map({
       layers: [
         new ol.layer.Tile({
           source: new ol.source.OSM()
-        })
+        }),
+        vectorLayer
       ],
       target: 'map',
       view: new ol.View({
@@ -120,33 +257,71 @@
       })
     });
 
+    var popup = new ol.Overlay.Popup;
+    popup.setOffset([0, -55]);
+    map.addOverlay(popup);
+
+    //Control functions
     map.on('click', function (evt) {
-      var lonlat = ol.proj.transform(evt.coordinate, 'EPSG:3857', 'EPSG:4326');
-      var lon = lonlat[0];
-      var lat = lonlat[1];
+      var f = map.forEachFeatureAtPixel(
+        evt.pixel,
+        function (ft, layer) { return ft; }
+      );
+      if (f && f.get('type') == 'icon') {
+        var geometry = f.getGeometry();
+        var coord = geometry.getCoordinates();
+        
+
+        var content = '<h4 stryle="color:#377BB5">' + f.get('name') + '</h4>'
+        f.get('apartments').forEach(function (element) {
+          content = content + '<p onclick="clickApartment(\'' + element[1]+ '\')">' + element[0] + '</p>';
+        });
+       
+
+        popup.show(coord, content);
+
+      } else {
+        popup.hide();
+      }
+
       $("#x-input").val(evt.coordinate[0]);
       $("#y-input").val(evt.coordinate[1]);
-      
+
     });
 
-    $("#volar_button").click(function() {
+    map.on('pointermove', function (e) {
+      if (e.dragging) { popup.hide(); return; }
+
+      var pixel = map.getEventPixel(e.originalEvent);
+      var hit = map.hasFeatureAtPixel(pixel);
+
+      map.getTarget().style.cursor = hit ? 'pointer' : '';
+    });
+    $("#volar_button").click(function () {
       var x = $("#x-input").val();
       var y = $("#y-input").val();
       var z = $("#z-input").val();
-      volar(x,y,z)
+      volar(x, y, z)
       $('#cesuim_tab').trigger('click')
     });
 
-     function volar(x,y,z) {
+    function clickApartment(z) {
+      var x = $("#x-input").val();
+      var y = $("#y-input").val();
+      volar(x, y, z)
+      $('#cesuim_tab').trigger('click')
+    }
+    function volar(x, y, z) {
       var camera = scene.camera;
-      var initialPosition = Cesium.Cartesian3.fromDegrees(x,y,z);
+      var initialPosition = Cesium.Cartesian3.fromDegrees(x, y, z);
+      //var initialOrientation = new Cesium.HeadingPitchRoll.fromDegrees(0,0,0);
       var initialOrientation = new Cesium.HeadingPitchRoll.fromDegrees(21.27879878293835, -21.34390550872461, 0.0716951918898415);
       camera.flyTo({
         destination: initialPosition,
         orientation: initialOrientation,
         endTransform: Cesium.Matrix4.IDENTITY
       });
-  }
+    }
 
   </script>
 </body>

@@ -22,8 +22,9 @@
     @import url(../Build/Cesium/Widgets/widgets.css);
     html,
     body,
-    #cesiumContainer, 
-    #cesiumContainer2 {
+    #cesiumContainer,
+    #cesiumContainer2,
+    #cesiumContainer3 {
       width: 100%;
       height: 100%;
       margin: 0;
@@ -122,6 +123,9 @@
       <li>
         <a data-toggle="tab" href="#menu2" id="cesuim_tab_lider">Nube de puntos</a>
       </li>
+      <li>
+        <a data-toggle="tab" href="#menu3" id="cesuim_tab_lider">DEM</a>
+      </li>
     </ul>
 
     <div class="tab-content">
@@ -156,6 +160,9 @@
       </div>
       <div id="menu2" class="tab-pane fade" style="height: 570px">
         <div id="cesiumContainer2"></div>
+      </div>
+      <div id="menu3" class="tab-pane fade" style="height: 570px">
+        <div id="cesiumContainer3"></div>
       </div>
     </div>
   </div>
@@ -193,41 +200,7 @@
     viewer.scene.primitives.add(tileset);
 
     // OpenLayers Inizialization
-    var marker1 = new ol.Feature({
-      type: 'icon',
-      name: "Torre 1",
-      apartments: [
-        ["Piso 10", 100],
-        ["Piso 13", 130],
-        ["Piso 20", 200]
-      ],
-      geometry: new ol.geom.Point([-74.00086964665701, 40.705590795380765])
-    });
-    var marker2 = new ol.Feature({
-      type: 'icon',
-      name: "Torre 2",
-      apartments: [
-        ["Piso 15", 150],
-        ["Piso 25", 250],
-        ["Piso 30", 350]
-      ],
-      geometry: new ol.geom.Point([-74.00608219206333, 40.71452870965004])
-    });
-
-
-    var marker3 = new ol.Feature({
-      type: 'icon',
-      name: "Torre 3",
-      apartments: [
-        ["Piso 15", 150],
-        ["Piso 25", 250],
-        ["Piso 30", 350]
-      ],
-      geometry: new ol.geom.Point([-74.01200719285684, 40.707841894347595])
-    });
-
-
-
+    
     var markers = [];
     var map
 
@@ -379,6 +352,29 @@
     viewer2.scene.primitives.add(tileset2);
     viewer2.zoomTo(tileset2);
 
+    // inicializacion de nube de puntos
+    var viewer3 = new Cesium.Viewer('cesiumContainer3', {
+      animation: false,
+      fullscreenButton: false,
+      vrButton: false,
+      geocoder: false,
+      homeButton: false,
+      timeline: false,
+      navigationHelpButton: false,
+      terrainProvider: new Cesium.CesiumTerrainProvider({
+        url: Cesium.IonResource.fromAssetId(3956)
+      })
+
+    });
+
+    viewer3.scene.camera.flyTo({
+      destination: Cesium.Cartesian3.fromRadians(-2.6399828792482234, 1.0993550795541742, 5795),
+      orientation: {
+        heading: 3.8455,
+        pitch: -0.4535,
+        roll: 0.0
+      }
+    });
 
   </script>
 </body>
